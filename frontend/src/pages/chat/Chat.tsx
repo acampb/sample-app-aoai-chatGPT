@@ -9,7 +9,7 @@ import uuid from 'react-uuid';
 import { isEmpty } from "lodash-es";
 
 import styles from "./Chat.module.css";
-import Azure from "../../assets/Azure.svg";
+import Azure from "../../assets/star.png";
 
 import {
     ChatMessage,
@@ -162,7 +162,7 @@ const Chat = () => {
 
         appStateContext?.dispatch({ type: 'UPDATE_CURRENT_CHAT', payload: conversation });
         setMessages(conversation.messages)
-        
+
         const request: ConversationRequest = {
             messages: [...conversation.messages.filter((answer) => answer.role !== ERROR)]
         };
@@ -202,7 +202,7 @@ const Chat = () => {
                 appStateContext?.dispatch({ type: 'UPDATE_CURRENT_CHAT', payload: conversation });
                 setMessages([...messages, toolMessage, assistantMessage]);
             }
-            
+
         } catch ( e )  {
             if (!abortController.signal.aborted) {
                 let errorMessage = "An error occurred. Please try again. If the problem persists, please contact the site administrator.";
@@ -364,9 +364,9 @@ const Chat = () => {
                 appStateContext?.dispatch({ type: 'UPDATE_CURRENT_CHAT', payload: resultConversation });
                 isEmpty(toolMessage) ?
                     setMessages([...messages, assistantMessage]) :
-                    setMessages([...messages, toolMessage, assistantMessage]);     
+                    setMessages([...messages, toolMessage, assistantMessage]);
             }
-            
+
         } catch ( e )  {
             if (!abortController.signal.aborted) {
                 let errorMessage = "An error occurred. Please try again. If the problem persists, please contact the site administrator.";
@@ -473,7 +473,7 @@ const Chat = () => {
             setMessages([])
         }
     }, [appStateContext?.state.currentChat]);
-    
+
     useLayoutEffect(() => {
         const saveToDB = async (messages: ChatMessage[], id: string) => {
             const response = await historyUpdate(messages, id)
@@ -484,7 +484,7 @@ const Chat = () => {
                 if(appStateContext.state.isCosmosDBAvailable.cosmosDB){
                     if(!appStateContext?.state.currentChat?.messages){
                         console.error("Failure fetching current chat state.")
-                        return 
+                        return
                     }
                     saveToDB(appStateContext.state.currentChat.messages, appStateContext.state.currentChat.id)
                     .then((res) => {
@@ -567,9 +567,9 @@ const Chat = () => {
                     <ShieldLockRegular className={styles.chatIcon} style={{color: 'darkorange', height: "200px", width: "200px"}}/>
                     <h1 className={styles.chatEmptyStateTitle}>Authentication Not Configured</h1>
                     <h2 className={styles.chatEmptyStateSubtitle}>
-                        This app does not have authentication configured. Please add an identity provider by finding your app in the 
+                        This app does not have authentication configured. Please add an identity provider by finding your app in the
                         <a href="https://portal.azure.com/" target="_blank"> Azure Portal </a>
-                        and following 
+                        and following
                          <a href="https://learn.microsoft.com/en-us/azure/app-service/scenario-secure-app-authentication-app-service#3-configure-authentication-and-authorization" target="_blank"> these instructions</a>.
                     </h2>
                     <h2 className={styles.chatEmptyStateSubtitle} style={{fontSize: "20px"}}><strong>Authentication configuration takes a few minutes to apply. </strong></h2>
@@ -634,7 +634,7 @@ const Chat = () => {
 
                         <Stack horizontal className={styles.chatInput}>
                             {isLoading && (
-                                <Stack 
+                                <Stack
                                     horizontal
                                     className={styles.stopGeneratingContainer}
                                     role="button"
@@ -650,8 +650,8 @@ const Chat = () => {
                             <Stack>
                                 {appStateContext?.state.isCosmosDBAvailable?.status !== CosmosDBStatus.NotConfigured && <CommandBarButton
                                     role="button"
-                                    styles={{ 
-                                        icon: { 
+                                    styles={{
+                                        icon: {
                                             color: '#FFFFFF',
                                         },
                                         root: {
@@ -670,8 +670,8 @@ const Chat = () => {
                                 />}
                                 <CommandBarButton
                                     role="button"
-                                    styles={{ 
-                                        icon: { 
+                                    styles={{
+                                        icon: {
                                             color: '#FFFFFF',
                                         },
                                         root: {
@@ -706,19 +706,19 @@ const Chat = () => {
                         </Stack>
                     </div>
                     {/* Citation Panel */}
-                    {messages && messages.length > 0 && isCitationPanelOpen && activeCitation && ( 
+                    {messages && messages.length > 0 && isCitationPanelOpen && activeCitation && (
                     <Stack.Item className={styles.citationPanel} tabIndex={0} role="tabpanel" aria-label="Citations Panel">
                         <Stack aria-label="Citations Panel Header Container" horizontal className={styles.citationPanelHeaderContainer} horizontalAlign="space-between" verticalAlign="center">
                             <span aria-label="Citations" className={styles.citationPanelHeader}>Citations</span>
                             <IconButton iconProps={{ iconName: 'Cancel'}} aria-label="Close citations panel" onClick={() => setIsCitationPanelOpen(false)}/>
                         </Stack>
                         <h5 className={styles.citationPanelTitle} tabIndex={0} title={activeCitation.url && !activeCitation.url.includes("blob.core") ? activeCitation.url : activeCitation.title ?? ""} onClick={() => onViewSource(activeCitation)}>{activeCitation.title}</h5>
-                        <div tabIndex={0}> 
-                        <ReactMarkdown 
+                        <div tabIndex={0}>
+                        <ReactMarkdown
                             linkTarget="_blank"
                             className={styles.citationPanelContent}
-                            children={activeCitation.content} 
-                            remarkPlugins={[remarkGfm]} 
+                            children={activeCitation.content}
+                            remarkPlugins={[remarkGfm]}
                             rehypePlugins={[rehypeRaw]}
                         />
                         </div>
