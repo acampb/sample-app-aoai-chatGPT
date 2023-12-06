@@ -2,11 +2,11 @@ import os
 import uuid
 from datetime import datetime
 from flask import Flask, request
-from azure.identity import DefaultAzureCredential  
-from azure.cosmos import CosmosClient, PartitionKey  
-  
+from azure.identity import DefaultAzureCredential
+from azure.cosmos import CosmosClient, PartitionKey
+
 class CosmosConversationClient():
-    
+
     def __init__(self, cosmosdb_endpoint: str, credential: any, database_name: str, container_name: str):
         self.cosmosdb_endpoint = cosmosdb_endpoint
         self.credential = credential
@@ -20,31 +20,31 @@ class CosmosConversationClient():
         try:
             if not self.cosmosdb_client or not self.database_client or not self.container_client:
                 return False
-            
+
             container_info = self.container_client.read()
             if not container_info:
                 return False
-            
+
             return True
         except:
             return False
 
     def create_conversation(self, user_id, title = ''):
         conversation = {
-            'id': str(uuid.uuid4()),  
+            'id': str(uuid.uuid4()),
             'type': 'conversation',
-            'createdAt': datetime.utcnow().isoformat(),  
-            'updatedAt': datetime.utcnow().isoformat(),  
+            'createdAt': datetime.utcnow().isoformat(),
+            'updatedAt': datetime.utcnow().isoformat(),
             'userId': user_id,
             'title': title
         }
         ## TODO: add some error handling based on the output of the upsert_item call
-        resp = self.container_client.upsert_item(conversation)  
+        resp = self.container_client.upsert_item(conversation)
         if resp:
             return resp
         else:
             return False
-    
+
     def upsert_conversation(self, conversation):
         resp = self.container_client.upsert_item(conversation)
         if resp:
@@ -53,14 +53,14 @@ class CosmosConversationClient():
             return False
 
     def delete_conversation(self, user_id, conversation_id):
-        conversation = self.container_client.read_item(item=conversation_id, partition_key=user_id)        
+        conversation = self.container_client.read_item(item=conversation_id, partition_key=user_id)
         if conversation:
             resp = self.container_client.delete_item(item=conversation_id, partition_key=user_id)
             return resp
         else:
             return True
 
-        
+
     def delete_messages(self, conversation_id, user_id):
         ## get a list of all the messages in the conversation
         messages = self.get_messages(user_id, conversation_id)
@@ -107,7 +107,7 @@ class CosmosConversationClient():
             return None
         else:
             return conversation[0]
- 
+
     def create_message(self, conversation_id, user_id, input_message: dict):
         message = {
             'id': str(uuid.uuid4()),
@@ -119,8 +119,8 @@ class CosmosConversationClient():
             'role': input_message['role'],
             'content': input_message['content']
         }
-        
-        resp = self.container_client.upsert_item(message)  
+
+        resp = self.container_client.upsert_item(message)
         if resp:
             ## update the parent conversations's updatedAt field with the current message's createdAt datetime value
             conversation = self.get_conversation(user_id, conversation_id)
@@ -129,7 +129,7 @@ class CosmosConversationClient():
             return resp
         else:
             return False
-    
+
 
 
     def get_messages(self, user_id, conversation_id):
